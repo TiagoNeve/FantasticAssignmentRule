@@ -1,3 +1,68 @@
-<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,lightning:isUrlAddressable" access="global">
+    <!-- 
+        TODO: Ta esse é o core da solução, se conseguir fazer isso praticamente 50% está feito
+        o restante é mais questão de detalhes e tudo mais, como para pegar o esse registro.
+        Vamos com as seguintes etapas, para isso funcionar direito esse componente precisa das seguintes informações:
+        1. Ruler -> Pegar o id da ruler relacionado pelo URL e colocar no campo do recordEditForm
+        2. Colocar o campo Order no recordEditForm
+        3. Assign To -> Definir parecido com o que tem hoje no salesforce, se for User vai buscar usuários
+        se for Queue irá buscar as Queue, guardar o lookup em um attributo.
+        4. Email -> Lookup de email template. Possível escolher classic ou lightning, tentar realizar o filtro para pegar de 
+        acordo com o Ruler.Object__c
+        5. Criteria -> Parte mais difícil, deixar para o final dps de toda a lógica construída.
+        basicamente será necessário ter dois modos, 1 para campos e outro para fórmula field.
+    -->
 
+    <!-- ATTRIBUTES -->
+    <aura:attribute name="ruleId" type="String" />
+    <aura:attribute name="assignToMode" type="String" default="User" />
+    <aura:attribute name="optionsAssignToMode" type="List" default="[
+        {'label': 'User', 'value': 'User'},
+        {'label': 'Queue', 'value': 'Queue'}
+    ]" />
+
+    <!-- HANDLERS -->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+    <!-- Services -->
+    <lightning:navigation aura:id="navService"/>
+
+    <!-- BODY -->
+    <lightning:card title="Create Rule Entry">
+        <lightning:recordEditForm 
+                aura:id="ruleEntryRecordEditForm" 
+                objectApiName="RuleEntry__c" 
+                onsubmit="{! c.handleSubmit }"
+                onsuccess="{! c.handleSuccess }">
+
+            <lightning:messages />
+            
+            <lightning:card title="Step 1: Set the order in which this rule entry will be processed">
+                <lightning:inputField  fieldName="Order__c"/>
+            </lightning:card>
+
+            <lightning:card title="Step 2: Select the criteria for this rule entry">
+                <lightning:inputField fieldName="Criteria__c"/>
+            </lightning:card>
+
+            <lightning:card title="Step 3: Select the user or queue to assign the Lead to">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:combobox name="assignTo" value="{! v.assignToMode }" options="{! v.optionsAssignToMode }"/>
+                        <lightning:inputField fieldName="AssignTo__c"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:inputField fieldName="Email__c"/>
+                    </div>
+                </div>
+            </lightning:card>
+
+            <div class="slds-align_absolute-center">
+                <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="save" label="Save" />
+                <lightning:button class="slds-m-top_small" variant="brand" name="cancel" label="Cancel" onclick="{! c.handleCancel }" />
+            </div>
+        </lightning:recordEditForm>
+    </lightning:card>
+
+    <!--  -->
 </aura:component>	
