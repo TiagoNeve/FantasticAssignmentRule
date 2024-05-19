@@ -1,6 +1,5 @@
 ({
     init : function(component, event, helper) {
-        // TODO: Check if can we use Schema.getGlobalDescribe() to set in attribute v.options
         const getAllObjectsAction = component.get('c.getAllObjects');
 
         getAllObjectsAction.setCallback(this, function(response) {
@@ -8,10 +7,7 @@
 
             switch (state) {
                 case 'SUCCESS':
-                    console.log('SUCCESS');
                     const returnValue = JSON.parse( response.getReturnValue() );
-                    console.log('returnValue');
-                    console.log(returnValue);
                     component.set('v.optionsObjects', returnValue);
                     break;
                 
@@ -43,14 +39,34 @@
 
     // Methods FORM
     handleSubmit: function(component, event, helper) {
-        event.preventDefault();       // stop the form from submitting
-        var fields = event.getParam('fields');
+        event.preventDefault();
+        const fields = event.getParam('fields');
         fields.Object__c = component.get('v.objectSelected');
         component.find('ruleRecordEditForm').submit(fields);
     }
-    // handleSuccess: function(component, event) {
-    //     var updatedRecord = JSON.parse(JSON.stringify(event.getParams()));
-    //     console.log('onsuccess: ', updatedRecord.id);
-    //     // Navigate to record here.
-    // }
+
+    , handleSuccess : function(component,event,helper) {
+        const record = event.getParams();  
+        const recordId = record.response.id;
+
+        const navService = component.find("navService");        
+        var pageReference = {
+            "type": 'standard__recordPage',         
+            "attributes": {              
+                "recordId": recordId,
+                "actionName": "view",
+                "objectApiName":"Rule__c"
+            }        
+        };
+
+        navService.navigate(pageReference);
+    }
+
+    , handleCancel: function(component, event, helper) {
+        const urlEvent = $A.get("e.force:navigateToURL");
+        urlEvent.setParams({
+            "url": "/lightning/o/Rule__c/list"
+        });
+        urlEvent.fire();
+    }
 })
