@@ -24,7 +24,7 @@ global without sharing class ProcessAssignmentRulesAA {
         // TODO: Agora a gente tem a lista de objetos por nome de api
         // Podemos buscar as regras por nome de api agora em kkkk
         if (!recordsInputByApiName.isEmpty()) {
-            List<Rule__c> rules = [SELECT Id, Object__c, (SELECT Id, Order__c, Criteria__c, AssignTo__c, Email__c FROM Rule_Entries__r ORDER BY Order__c ASC) FROM Rule__c WHERE Object__c IN : recordsInputByApiName.keySet()];
+            List<Rule__c> rules = [SELECT Id, Object__c, (SELECT Id, Order__c, Criteria__c, AssignTo__c, Email__c, Logic__c FROM Rule_Entries__r ORDER BY Order__c ASC) FROM Rule__c WHERE Object__c IN : recordsInputByApiName.keySet()];
 
             Map<String, List<Rule__c>> rulesByObjectApiName = new Map<String, List<Rule__c>>();
 
@@ -65,6 +65,8 @@ global without sharing class ProcessAssignmentRulesAA {
                 // Fluxo em
                 for (SObject recordR : recordsInput) {
 
+                    Boolean passouNoCriterio = false;
+
                     for (Rule__c rule : rulesFromMap) {
                         System.debug(rule.Rule_Entries__r);
                     
@@ -72,12 +74,15 @@ global without sharing class ProcessAssignmentRulesAA {
                             System.debug('ruleEntry');
                             System.debug(ruleEntry);
 
+                            if (passouNoCriterio) continue;
+
                             Decimal order = ruleEntry.Order__c;
 
                             List<Map<String, String>> criterioDeserializado = (List<Map<String, String>>) JSON.deserialize(ruleEntry.Criteria__c, List<Map<String, String>>.class);
 
                             String assignTo = ruleEntry.AssignTo__c;
                             String email = ruleEntry.Email__c;
+                            String logic = ruleEntry.Logic__c;
 
                             System.debug('order');
                             System.debug(order);
@@ -91,14 +96,21 @@ global without sharing class ProcessAssignmentRulesAA {
                             System.debug('email');
                             System.debug(email);
 
-                            Boolean passouNoCriterio;
+                            System.debug('logic');
+                            System.debug(logic);
 
+                            Integer aux = 0;
                             for (Map<String, String> criterio : criterioDeserializado) {
+                                
+                                ++aux;
+
                                 String field = criterio.get('field');
                                 String operation = criterio.get('operation');
                                 String value = criterio.get('value');
 
                                 Object recordFieldValue = recordR.get(field);
+
+                                Boolean criterioAtual = false;
 
                                 switch on operation {
                                     when '!=' {
@@ -107,13 +119,22 @@ global without sharing class ProcessAssignmentRulesAA {
                                         System.debug('!=');
                                         System.debug(value);
                                         System.debug(recordFieldValue != value);
-                                        passouNoCriterio = recordFieldValue != value;
+                                        criterioAtual = recordFieldValue != value;
                                     }
                                     when '==' {
-                                        passouNoCriterio = recordFieldValue == value;
+                                        System.debug('Entrou no critério ==');
+                                        System.debug(recordFieldValue);
+                                        System.debug('==');
+                                        System.debug(value);
+                                        System.debug(recordFieldValue == value);
+                                        criterioAtual = recordFieldValue == value;
                                     }
                                 }
+
+                                logic = logic.replace(String.valueOf(aux), String.valueOf(criterioAtual));
                             }
+
+                            passouNoCriterio = BooleanExpression.eval( logic.toUpperCase() );
 
                             if (passouNoCriterio) {
                                 System.debug('FLUXO PARA MUDAR O PROPRIETÁRIO E ENVIAR EMAIL');

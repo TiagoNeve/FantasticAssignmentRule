@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses>
+        <apexClass>BooleanExpression</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>BooleanExpression_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>CreateRuleButtonCTR</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -22,6 +30,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>RuleEntry__c.Email__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RuleEntry__c.Logic__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

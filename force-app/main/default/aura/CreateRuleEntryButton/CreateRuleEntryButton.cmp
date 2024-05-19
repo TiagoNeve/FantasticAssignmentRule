@@ -20,6 +20,28 @@
         {'label': 'User', 'value': 'User'},
         {'label': 'Queue', 'value': 'Queue'}
     ]" />
+    
+    <aura:attribute name="criteriaModeValue" type="String" default="Field mode" />
+    <aura:attribute name="criteriaModeOptions" type="List" default="[
+        {'label': 'Field mode', 'value': 'Field mode'},
+        {'label': 'Advanced mode', 'value': 'Advanced mode'}
+    ]" />
+
+    <aura:attribute name="fieldOptions" type="List" default="[
+        {'label': 'Name', 'value': 'Name'},
+        {'label': 'Type', 'value': 'Type'}
+    ]" />
+
+    <aura:attribute name="opOptions" type="List" default="[
+        {'label': 'Equals', 'value': '=='},
+        {'label': 'Not equals', 'value': '!='}
+    ]" />
+
+    <aura:attribute name="criterias" type="List" default="[
+        {field:'', operation:'', value:''}
+    ]" />
+
+    <aura:attribute name="logicCriteria" type="String" default="1" />
 
     <!-- HANDLERS -->
     <aura:handler name="init" value="{! this }" action="{! c.init }"/>
@@ -42,7 +64,36 @@
             </lightning:card>
 
             <lightning:card title="Step 2: Select the criteria for this rule entry">
-                <lightning:inputField fieldName="Criteria__c"/>
+                <!-- Create two modes. -->
+                <lightning:combobox name="criteriaMode" value="{! v.criteriaModeValue }" options="{! v.criteriaModeOptions }"/>
+
+                <aura:if isTrue="{! v.criteriaModeValue == 'Field mode'}">
+                    <aura:iteration items="{! v.criterias }" var="criteria" indexVar="idx">
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                                <!-- Field -->
+                                <lightning:combobox label="Select field" name="{! 'field' + idx }" value="{! criteria.field }" options="{! v.fieldOptions }"/>
+                            </div>
+                            <div class="slds-col">
+                                <!-- Operation -->
+                                <lightning:combobox label="Select option" name="{! 'operation' + idx }" value="{! criteria.operation }" options="{! v.opOptions }"/>
+                            </div>
+                            <div class="slds-col">
+                                <!-- Value -->
+                                <lightning:input label="Set the value" name="{! 'value' + idx}" type="text" value="{! criteria.value }" />
+                            </div>
+                        </div>
+                    </aura:iteration>
+
+                    <!-- Add new options -->
+                    <lightning:button label="Add new criteria" onclick="{!c.handleAddNewCriteria}" /> 
+                    <lightning:button label="Remove last criteria" onclick="{!c.handleRemoveLastCriteria}" />
+                </aura:if>
+
+                <aura:if isTrue="{! v.criteriaModeValue == 'Advanced mode'}">
+                    <lightning:inputField fieldName="Criteria__c"/>
+                </aura:if>
+
             </lightning:card>
 
             <lightning:card title="Step 3: Select the user or queue to assign the Lead to">

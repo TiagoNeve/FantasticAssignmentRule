@@ -55,6 +55,27 @@
         event.preventDefault();
         const fields = event.getParam('fields');
         fields.Rule__c = component.get('v.ruleId');
+        
+        // Set the Logic default right now
+        console.log('fields');
+        console.log(fields);
+        const criterias = component.get('v.criterias');
+        const criteriaAtualizado = JSON.parse(JSON.stringify( criterias ));
+        console.log( criteriaAtualizado );
+        fields.Criteria__c = JSON.stringify(criteriaAtualizado);
+
+        let logic = '1 ';
+        criterias.forEach((criteria, idx) => {
+            if (idx != 0) {
+                logic += 'AND ' + (idx + 1);
+            }
+        });
+
+        console.log('logic');
+        console.log(logic);
+
+        fields.Logic__c = logic;
+
         component.find('ruleEntryRecordEditForm').submit(fields);
     }
 
@@ -81,5 +102,29 @@
             "url": "/" + component.get('v.ruleId')
         });
         urlEvent.fire();
+    }
+
+    , handleAddNewCriteria: function(component, event, helper) {
+        const criterias = component.get('v.criterias');
+
+        var newObjectDeserializado = {};
+        newObjectDeserializado.field = '';
+        newObjectDeserializado.operation = '';
+        newObjectDeserializado.value = '';
+
+        console.log(criterias[0]);
+        
+        criterias.push( newObjectDeserializado );
+        
+        console.log('criterias');
+        console.log( criterias );
+
+        component.set('v.criterias', criterias);
+    }
+
+    , handleRemoveLastCriteria: function(component, event, helper) {
+        const criterias = component.get('v.criterias');
+        criterias.pop();
+        component.set('v.criterias', criterias);
     }
 })

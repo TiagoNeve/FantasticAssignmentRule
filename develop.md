@@ -19,3 +19,7 @@ https://trailhead.salesforce.com/pt-BR/trailblazer-community/feed/0D54V00007T4PJ
 
 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_single.htm#apex_Messaging_SingleEmailMessage_setToAddresses
 
+https://daily.dev/blog/add-to-list-javascript-array-manipulation-basics#:~:text=push()%20is%20your%20go,without%20messing%20up%20the%20originals.
+
+https://vijayasankarn.wordpress.com/2018/07/05/salesforce-apex-evaluate-boolean-string-expression/
+
