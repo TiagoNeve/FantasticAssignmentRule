@@ -1,3 +1,47 @@
-<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global" >
+<aura:component controller="CreateRuleButtonCTR" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global" >
+
+    <!-- TODO: A criação do Rule name precisa preencher alguns campos, provavelmente o ideal é utilizar 
+        o recordEditForm no modo de criação, com uma opção a mais para pegar todos os objetos da organização.
+        A ideia é:
+        1. Ter um recordEditForm pegando os campos padrões do objeto Rule, como Rule Name e Active
+        2. Ter um lookup que busca o nome de todos os objetos da organização, podemos utilizar o Schema.getGlobalDescribe()
+        3. Checar quais permissões o usuário precisa ter para usar o Schema.getGlobalDescribe()
+    -->
+
+    <!-- Attributes -->
+
+    <aura:attribute type="String" name="objectSelected" default="Account" />
+    <aura:attribute type="List" name="optionsObjects" default="[
+        {'label': 'Account', 'value': 'Account'},
+        {'label': 'Lead', 'value': 'Lead'},
+        {'label': 'Opportunity', 'value': 'Opportunity'}
+    ]"/>
+
+    <!-- Handlers -->
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+    <!-- Body -->
+
+    <lightning:card title="Create Rule">
+        <lightning:recordEditForm 
+                aura:id="ruleRecordEditForm" 
+                objectApiName="Rule__c" 
+                onsubmit="{! c.handleSubmit }">
+
+            <lightning:messages />
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="Name"/>
+                    <lightning:inputField fieldName="Active__c"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <!-- TODO: Aqui vai ficar qual objeto é essa rule -->
+                    <lightning:combobox name="Objects" label="Objects" value="{! v.objectSelected }" placeholder="Select Object" options="{! v.optionsObjects }"/>
+                </div>
+            </div>
+            <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="save" label="Save" />
+        </lightning:recordEditForm>
+    </lightning:card>
 
 </aura:component>	
