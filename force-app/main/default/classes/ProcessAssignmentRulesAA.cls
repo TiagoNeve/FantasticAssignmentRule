@@ -55,6 +55,7 @@ global without sharing class ProcessAssignmentRulesAA {
             // Dar continue.
 
             List<Messaging.SingleEmailMessage> emailsParaEnviar = new List<Messaging.SingleEmailMessage>();
+            List<SObject> recordsToUpdate = new List<SObject>();
 
             for ( String objectApiName : recordsInputByApiName.keySet() ) {
                 List<SObject> recordsInput = recordsInputByApiName.get(objectApiName);
@@ -121,9 +122,11 @@ global without sharing class ProcessAssignmentRulesAA {
                                 recordR.put('OwnerId', assignTo);
                                 System.debug(recordR);
 
+                                recordsToUpdate.add(recordR);
+
                                 // Fluxo email 
                                 if (email != null) {
-                                    Messaging.SingleEmailMessage emailMessage = Messaging.renderStoredEmailTemplate( email, null, null);
+                                    Messaging.SingleEmailMessage emailMessage = Messaging.renderStoredEmailTemplate( email, null, recordR.Id);
                                 
                                     if (assignTo.startsWith('005')) { // User fluxo
                                         emailMessage.setToAddresses(new List<String>{assignTo});
@@ -141,6 +144,8 @@ global without sharing class ProcessAssignmentRulesAA {
 
                 }
             }
+
+            if (!recordsToUpdate.isEmpty()) UPDATE recordsToUpdate;
 
             if (!emailsParaEnviar.isEmpty()) {
                 Messaging.SendEmailResult[] emailResults = Messaging.sendEmail(emailsParaEnviar, false);
