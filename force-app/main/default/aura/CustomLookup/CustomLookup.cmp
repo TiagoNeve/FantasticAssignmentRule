@@ -1,0 +1,28 @@
+<aura:component controller="customLookup" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="objectName" type="String" default="Account"/>
+    <aura:attribute name="searchString" type="String" default=""/>
+    <aura:attribute name="records" type="List" default="[]"/>
+    <aura:attribute name="selectedRecord" type="Object"/>
+    <aura:attribute name="iconName" type="String" default="standard:account"/>
+    
+    <lightning:input type="text" aura:id="search" label="{! 'Search ' + v.objectName }" class="slds-input" value="{!v.searchString}" placeholder="Search..." onchange="{!c.search}" size="75" />
+    
+    <aura:if isTrue="{!v.records.length > 0}">
+        <lightning:card title="Related Records">
+            <ul>
+                <aura:iteration items="{!v.records}" var="record">
+                    <lightning:layout class="slds-m-top--small">
+                        <lightning:layoutItem size="2">
+                    <lightning:icon iconName="{!v.iconName}"/>
+                </lightning:layoutItem>
+                        <lightning:layoutItem size="10">
+                        <a onclick="{!c.selectRecord}" data-record="{!record.Id}">
+                            <strong class="custom-class">{!record.Name}</strong>
+                        </a>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                </aura:iteration>
+            </ul>
+        </lightning:card>
+    </aura:if>
+</aura:component>

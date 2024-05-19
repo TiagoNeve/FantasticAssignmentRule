@@ -76,6 +76,19 @@
 
         fields.Logic__c = logic;
 
+        // Fluxo para pegar o AssignTo__c e Email__c
+        const selectUserRecord = component.get('v.selectedRecordId');
+        console.log('selectUserRecord');
+        console.log(selectUserRecord);
+        console.log(selectUserRecord.Id);
+        fields.AssignTo__c = selectUserRecord.Id;
+
+        const emailTemplateR = component.get('v.selecteEmailTemplateId');
+        console.log('emailTemplateR');
+        console.log(emailTemplateR);
+        console.log(emailTemplateR.Id);
+        fields.Email__c = emailTemplateR.Id;
+
         component.find('ruleEntryRecordEditForm').submit(fields);
     }
 

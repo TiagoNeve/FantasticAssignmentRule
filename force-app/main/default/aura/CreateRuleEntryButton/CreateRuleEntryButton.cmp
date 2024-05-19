@@ -20,6 +20,8 @@
         {'label': 'User', 'value': 'User'},
         {'label': 'Queue', 'value': 'Queue'}
     ]" />
+    <aura:attribute name="selectedRecordId" type="Object" />
+    <aura:attribute name="selecteEmailTemplateId" type="Object" />
     
     <aura:attribute name="criteriaModeValue" type="String" default="Field mode" />
     <aura:attribute name="criteriaModeOptions" type="List" default="[
@@ -100,10 +102,21 @@
                 <div class="slds-grid">
                     <div class="slds-col slds-size_1-of-2">
                         <lightning:combobox name="assignTo" value="{! v.assignToMode }" options="{! v.optionsAssignToMode }"/>
-                        <lightning:inputField fieldName="AssignTo__c"/>
+
+                        <aura:if isTrue="{! v.assignToMode == 'User'}">
+                            <!-- Fluxo para User -->
+                            <c:CustomLookup objectName="User" iconName="standard:user" selectedRecord="{!v.selectedRecordId}"/>
+                        </aura:if>
+
+                        <aura:if isTrue="{! v.assignToMode == 'Queue'}">
+                            <!-- Fluxo para Queue -->
+                            <c:CustomLookup objectName="Group" iconName="standard:lead" selectedRecord="{!v.selectedRecordId}"/>
+                        </aura:if>
+                        <!-- <lightning:inputField fieldName="AssignTo__c"/> -->
                     </div>
                     <div class="slds-col slds-size_1-of-2">
-                        <lightning:inputField fieldName="Email__c"/>
+                        <c:CustomLookup objectName="EmailTemplate" iconName="standard:email" selectedRecord="{!v.selecteEmailTemplateId}"/>
+                        <!-- <lightning:inputField fieldName="Email__c"/> -->
                     </div>
                 </div>
             </lightning:card>
